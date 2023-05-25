@@ -47,19 +47,20 @@ def blood_pressure_ranges(row):
 
 
 def feature_engineering(data):
-    # create age group
-    age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 81,20)]
-    data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels)
     # create features the BMI_Range and BP_Range for x_train
     data['BMI_Range'] = data.apply(create_bmi_range, axis=1)
     data['BP_range'] = data.apply(blood_pressure_ranges, axis=1)
+    # create age group
+    age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 81,20)]
+    data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels)
+
     data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index'], inplace=True)
     
 
 
 def combine_cats_nums(transformed_data, full_pipeline):
     cat_features = full_pipeline.named_transformers_['categorical']['cat_encoder'].get_feature_names()
-    num_features = full_pipeline.named_transformers_['numerical']['std_scaler'].get_feature_names()
+    num_features = ['Plasma Glucose', 'Blood Work Result-1', 'Blood Work Result-2', 'Blood Work Result-3', 'Blood Work Result-4']
     columns_ = np.concatenate([num_features, cat_features])
     prepared_data = pd.DataFrame(transformed_data, columns=columns_)
     prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'})
