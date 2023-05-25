@@ -3,13 +3,19 @@ from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from assets.utils import feature_engineering, load_pickle
+from assets.utils import feature_engineering, load_pickle, combine_cats_nums
 import pandas as pd
 # import tabulate
 
+# create an instance of FastApi
 app = FastAPI(debug=True)
 
 
+# load the model
+model = load_pickle('src/app/assets/model.pkl')
+
+# load the pipeline
+transformer = load_pickle('src/app/assets/full_pipeline.pkl')
 
 
 @app.get('/predict')
@@ -24,14 +30,28 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                         'Blood Work Result-3': blood_work_result_3, 'Body Mass Index':	body_mass_index,
                         'Blood Work Result-4':	blood_work_result_4, 'Age': age, 'Insurance': insurance})
 
+    data_copy = data.copy()
     # run function to create new features
-    prepared_data = feature_engineering(data)
-    print(f'INFO:   {prepared_data.to_markdown()}')
+    data['Insurance'] = data['Insurance'].astype(int).astype(str)
+    # create the new feature just like in training sessionn
+    feature_engineering(data)
+    # transform the data using the transformer
+    transformed_data = transformer.transform(data)
 
-    # convert dataframe to dicionary
-    data_dict =  data.to_dict('index')
+    # get and concatenate the numerical and categorical features
+    # create a dataframe from the transformed data 
+    combine_cats_nums(transformed_data, transformer)
 
-    return {'outputs': data_dict}
+    # make prediction
+    label = model.predict(transformed_data)
+    print(label)
+    # data_copy['Label'] = label
+    print(f'INFO:   {data.to_markdown()}')
+    
+    # # convert dataframe to dicionary
+    # data_dict =  data_copy.to_dict('index')
+
+    return {'outputs': 'data_dict'}
 
 
 
