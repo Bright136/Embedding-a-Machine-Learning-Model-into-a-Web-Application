@@ -3,17 +3,6 @@ import pandas as pd
 import numpy as np
 import pickle
 
-# class Sepsis(BaseModel):
-#     plasma_glucose: float
-#     blood_work_result_1: float
-#     blood_pressure: float
-#     blood_work_result_2: float
-#     blood_work_result_3: float
-#     body_mass_index: float
-#     blood_work_result_4: float
-#     age: int
-#     insurance: bool
-
 def load_pickle(filename):
     with open(filename, 'rb') as file:
         contents = pickle.load(file)
