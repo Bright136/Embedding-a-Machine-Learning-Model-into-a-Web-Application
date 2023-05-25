@@ -5,18 +5,14 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from assets.utils import feature_engineering, load_pickle, combine_cats_nums
 import pandas as pd
-# import tabulate
 
 # create an instance of FastApi
 app = FastAPI(debug=True)
 
-
 # load the model
 model = load_pickle('src/app/assets/model.pkl')
-
 # load the pipeline
 transformer = load_pickle('src/app/assets/full_pipeline.pkl')
-
 
 @app.get('/predict')
 async def predict(plasma_glucose: float, blood_work_result_1: float, 
@@ -45,20 +41,13 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
     # make prediction
     label = model.predict(transformed_data)
     print(label)
-    # data_copy['Label'] = label
+    data_copy['Label'] = label[0]
     print(f'INFO:   {data.to_markdown()}')
     
     # # convert dataframe to dicionary
-    # data_dict =  data_copy.to_dict('index')
+    data_dict =  data_copy.to_dict('index')
 
-    return {'outputs': 'data_dict'}
-
-
-
-
-
-
-
+    return {'outputs': data_dict}
 
 
 if __name__=='__main__':
