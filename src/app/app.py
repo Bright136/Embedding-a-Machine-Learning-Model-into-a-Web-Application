@@ -17,6 +17,22 @@ model = load_pickle('src/app/assets/model.pkl') # load the model
 transformer = load_pickle('src/app/assets/full_pipeline.pkl') # load the pipeline
 properties = load_pickle('src/app/assets/properties.pkl') # load the other properties saved from the modeling 
 
+# Configure static and template file
+app.mount("/static", StaticFiles(directory="src/app/static"), name="static") # mount statis files
+templates = Jinja2Templates(directory="src/app/templates") # mount templates for html
+
+# set display for root
+@app.get("/", response_class=HTMLResponse)
+async def read_item(request: Request):
+    return templates.TemplateResponse("index.html", {'request': request})
+
+
+
+# check the health status of the api
+@app.get("/health")
+def check_health():
+    return {"status": "ok"}
+
 # make a prediction with the api
 @app.get('/predict')
 async def predict(plasma_glucose: float, blood_work_result_1: float, 
