@@ -43,37 +43,31 @@ def feature_engineering(data):
     age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 81,20)]
     data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels)
 
-    data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index'], inplace=True)
+    data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index'], inplace=True) # drop columns 
     
 
 
 def combine_cats_nums(transformed_data, full_pipeline):
-    cat_features = full_pipeline.named_transformers_['categorical']['cat_encoder'].get_feature_names()
-    num_features = ['Plasma Glucose', 'Blood Work Result-1', 'Blood Work Result-2', 'Blood Work Result-3', 'Blood Work Result-4']
-    columns_ = np.concatenate([num_features, cat_features])
-    prepared_data = pd.DataFrame(transformed_data, columns=columns_)
-    prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'})
+    cat_features = full_pipeline.named_transformers_['categorical']['cat_encoder'].get_feature_names() # get the feature from the categorical transformer
+    num_features = ['Plasma Glucose', 'Blood Work Result-1', 'Blood Work Result-2',
+                    'Blood Work Result-3', 'Blood Work Result-4']
+    columns_ = np.concatenate([num_features, cat_features]) # concatenate numerical and categorical features
+    prepared_data = pd.DataFrame(transformed_data, columns=columns_) # create a dataframe from the transformed data
+    prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'}) # rename columns
     
 
 def get_label(data, transformer, model):
-
-    # run function to create new features
-    data['Insurance'] = data['Insurance'].astype(int).astype(str)
-    # create new features
-    feature_engineering(data)
-    # transform the data using the transformer
-    transformed_data = transformer.transform(data)
-
-    # get and concatenate the numerical and categorical features
-    # create a dataframe from the transformed data 
-    combine_cats_nums(transformed_data, transformer)
-
+    data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
+    feature_engineering(data) # create new features
+    transformed_data = transformer.transform(data) # transform the data using the transformer    
+    combine_cats_nums(transformed_data, transformer)# create a dataframe from the transformed data 
     # make prediction
-    label = model.predict(transformed_data)
+    label = model.predict(transformed_data) # make a prediction
     return label
     
 
 def return_columns():
+    # create new columns
     new_columns =  ['Plasma Glucose','Blood Work Result-1', 'Blood Pressure', 
                     'Blood Work Result-2', 'Blood Work Result-3', 'Body Mass Index',
                     'Blood Work Result-4', 'Age', 'Insurance']
