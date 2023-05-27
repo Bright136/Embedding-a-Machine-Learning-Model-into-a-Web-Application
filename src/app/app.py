@@ -30,7 +30,16 @@ async def read_item(request: Request):
 def check_health():
     return {"status": "ok"}
 
-
+# get the model infomation
+@app.get('/model-info')
+async def model_info():
+    model_params = model.get_params()
+    features = properties['train features']
+    print(features)
+    return {'model info': {
+            'model parameters': model_params,
+            'train feature': features}
+            }
 
 # make a prediction with the api
 @app.get('/predict')
