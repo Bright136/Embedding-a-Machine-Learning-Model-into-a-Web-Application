@@ -1,1 +1,3 @@
 dev\notebooks\.ipynb_checkpoints
+src\app\assets\__pycache__\
+Venv\
