@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from assets.utils import load_pickle, get_label, return_columns
+from assets.utils import load_pickle, get_label, return_columns, process_csv
 from assets.module import Inputs
 from io import StringIO
 import pandas as pd
@@ -85,24 +85,14 @@ async def predict_batch(inputs: Inputs):
 
 @app.post("/upload-data")
 async def upload_data(file: UploadFile=File(...)):
-    print(f'INFO    {file.content_type}')
     contents = await file.read()  # Read the file contents as a byte string
-    contents = contents.decode()  # Decode the byte string to a regular string
-    new_columns = return_columns() # return new_columns
-    # Process the uploaded file
-    data = pd.read_csv(StringIO(contents))
-    data = data.drop(columns=['ID'])
-    dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
-    print(f'INFO    {dict_new_old_cols}')
-    data = data.rename(columns=dict_new_old_cols)
+    data = process_csv(contents=contents)
     data_copy = data.copy() # set a copy on the data 
     label = get_label(data, transformer,  model) # get the labels
-    data_copy['Predicted Label'] = label
-    data_dict =  data_copy.to_dict('index')
+    data_copy['Predicted Label'] = label # create the predicted label columns
+    data_dict =  data_copy.to_dict('index') #convert data to dictionary
 
     print(f'INFO {data.to_markdown()}')
-
-
     return {'ouputs': data_dict}
 
 
