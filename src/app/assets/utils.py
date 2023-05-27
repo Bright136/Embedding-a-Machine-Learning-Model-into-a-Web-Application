@@ -72,3 +72,9 @@ def get_label(data, transformer, model):
     label = model.predict(transformed_data)
     return label
     
+
+def return_columns():
+    new_columns =  ['Plasma Glucose','Blood Work Result-1', 'Blood Pressure', 
+                    'Blood Work Result-2', 'Blood Work Result-3', 'Body Mass Index',
+                    'Blood Work Result-4', 'Age', 'Insurance']
+    return new_columns
