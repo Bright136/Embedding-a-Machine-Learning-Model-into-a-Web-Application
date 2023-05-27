@@ -11,8 +11,6 @@ from typing import List
 
 # create an instance of FastApi
 app = FastAPI(debug=True)
-
-# load pickle files
 model = load_pickle('src/app/assets/model.pkl') # load the model
 transformer = load_pickle('src/app/assets/full_pipeline.pkl') # load the pipeline
 properties = load_pickle('src/app/assets/properties.pkl') # load the other properties saved from the modeling 
@@ -27,11 +25,12 @@ async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {'request': request})
 
 
-
 # check the health status of the api
 @app.get("/health")
 def check_health():
     return {"status": "ok"}
+
+
 
 # make a prediction with the api
 @app.get('/predict')
@@ -59,5 +58,11 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
 
 
 
+
+
+
+
+
 if __name__=='__main__':
     uvicorn.run('app:app', reload=True)
+
