@@ -66,10 +66,21 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
     return {'outputs': data_dict}
 
 
-
-
-
-
+# make a batch prediction
+@app.post('/predict_batch')
+async def predict_batch(inputs: Inputs):
+    # create dataframe from inputs
+    data = pd.DataFrame(inputs.return_dict_inputs())
+    # rename the columsn in teh  dataframe to columns the transformer understands
+    data = data.rename(columns={'plasma_glucose': 'Plasma Glucose','blood_work_result_1':'Blood Work Result-1', 
+                            'blood_pressure':'Blood Pressure', 'blood_work_result_2':'Blood Work Result-2', 
+                            'blood_work_result_3':'Blood Work Result-3', 'body_mass_index':'Body Mass Index',
+                            'blood_work_result_4':'Blood Work Result-4', 'age': 'Age', 'insurance':'Insurance'})
+    data_copy = data.copy() # set a copy on the data 
+    label = get_label(data, transformer,  model) # get the labels
+    data_copy['Predicted Label'] = label
+    data_dict =  data_copy.to_dict('index') # convert dataframe to dicionary
+    return {'outputs': data_dict}
 
 
 if __name__=='__main__':
