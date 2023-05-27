@@ -2,6 +2,7 @@ from pydantic import BaseModel
 import pandas as pd
 import numpy as np
 import pickle
+from io import StringIO
 
 def load_pickle(filename):
     with open(filename, 'rb') as file:
@@ -72,3 +73,16 @@ def return_columns():
                     'Blood Work Result-2', 'Blood Work Result-3', 'Body Mass Index',
                     'Blood Work Result-4', 'Age', 'Insurance']
     return new_columns
+
+
+def process_csv(contents):
+     # Read the file contents as a byte string
+    contents = contents.decode()  # Decode the byte string to a regular string
+    new_columns = return_columns() # return new_columns
+    # Process the uploaded file
+    data = pd.read_csv(StringIO(contents))
+    data = data.drop(columns=['ID'])
+    dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
+    print(f'INFO    {dict_new_old_cols}')
+    data = data.rename(columns=dict_new_old_cols)
+    return data
