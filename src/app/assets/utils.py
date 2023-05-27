@@ -55,5 +55,20 @@ def combine_cats_nums(transformed_data, full_pipeline):
     prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'})
     
 
+def get_label(data, transformer, model):
 
+    # run function to create new features
+    data['Insurance'] = data['Insurance'].astype(int).astype(str)
+    # create new features
+    feature_engineering(data)
+    # transform the data using the transformer
+    transformed_data = transformer.transform(data)
+
+    # get and concatenate the numerical and categorical features
+    # create a dataframe from the transformed data 
+    combine_cats_nums(transformed_data, transformer)
+
+    # make prediction
+    label = model.predict(transformed_data)
+    return label
     
