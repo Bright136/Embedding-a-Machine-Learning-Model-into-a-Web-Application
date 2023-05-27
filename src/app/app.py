@@ -1,19 +1,23 @@
 import uvicorn
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from assets.utils import feature_engineering, load_pickle, combine_cats_nums
+from assets.utils import load_pickle, get_label, return_columns
+from assets.module import Inputs
+from io import StringIO
 import pandas as pd
+from typing import List
 
 # create an instance of FastApi
 app = FastAPI(debug=True)
 
-# load the model
-model = load_pickle('src/app/assets/model.pkl')
-# load the pipeline
-transformer = load_pickle('src/app/assets/full_pipeline.pkl')
+# load pickle files
+model = load_pickle('src/app/assets/model.pkl') # load the model
+transformer = load_pickle('src/app/assets/full_pipeline.pkl') # load the pipeline
+properties = load_pickle('src/app/assets/properties.pkl') # load the other properties saved from the modeling 
 
+# make a prediction with the api
 @app.get('/predict')
 async def predict(plasma_glucose: float, blood_work_result_1: float, 
                   blood_pressure: float, blood_work_result_2: float, 
@@ -21,35 +25,23 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                   blood_work_result_4: float, age: int, insurance: bool):
     
     # create dataframe from inputs 
-    data = pd.DataFrame({'Plasma Glucose': [plasma_glucose], 'Blood Work Result-1':	blood_work_result_1,
-                         'Blood Pressure': blood_pressure, 'Blood Work Result-2': blood_work_result_2,
-                        'Blood Work Result-3': blood_work_result_3, 'Body Mass Index':	body_mass_index,
-                        'Blood Work Result-4':	blood_work_result_4, 'Age': age, 'Insurance': insurance})
+    data = pd.DataFrame({'Plasma Glucose': [plasma_glucose], 'Blood Work Result-1':	[blood_work_result_1],
+                         'Blood Pressure': [blood_pressure], 'Blood Work Result-2': [blood_work_result_2],
+                        'Blood Work Result-3': [blood_work_result_3], 'Body Mass Index': [body_mass_index],
+                        'Blood Work Result-4':	[blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
 
+    # set a copy on the dataframe
     data_copy = data.copy()
-    # run function to create new features
-    data['Insurance'] = data['Insurance'].astype(int).astype(str)
-    # create the new feature just like in training sessionn
-    feature_engineering(data)
-    # transform the data using the transformer
-    transformed_data = transformer.transform(data)
-
-    # get and concatenate the numerical and categorical features
-    # create a dataframe from the transformed data 
-    combine_cats_nums(transformed_data, transformer)
-
-    # make prediction
-    label = model.predict(transformed_data)
-    print(label)
-    data_copy['Label'] = label[0]
-    print(f'INFO:   {data.to_markdown()}')
-    
-    # # convert dataframe to dicionary
+    # get the labels
+    label = get_label(data, transformer,  model)
+    # get the labels from making a prediction
+    data_copy['Predicted Label'] = label[0]
+    # convert dataframe to dicionary
     data_dict =  data_copy.to_dict('index')
 
     return {'outputs': data_dict}
 
 
+
 if __name__=='__main__':
     uvicorn.run('app:app', reload=True)
-
