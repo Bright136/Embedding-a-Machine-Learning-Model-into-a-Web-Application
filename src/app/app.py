@@ -1,6 +1,6 @@
 import uvicorn
 from fastapi import FastAPI, Request, File, UploadFile
-from fastapi.responses import HTMLResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from assets.utils import load_pickle, get_label, return_columns
@@ -81,6 +81,29 @@ async def predict_batch(inputs: Inputs):
     data_copy['Predicted Label'] = label
     data_dict =  data_copy.to_dict('index') # convert dataframe to dicionary
     return {'outputs': data_dict}
+
+
+@app.post("/upload-data")
+async def upload_data(file: UploadFile=File(...)):
+    print(f'INFO    {file.content_type}')
+    contents = await file.read()  # Read the file contents as a byte string
+    contents = contents.decode()  # Decode the byte string to a regular string
+    new_columns = return_columns() # return new_columns
+    # Process the uploaded file
+    data = pd.read_csv(StringIO(contents))
+    data = data.drop(columns=['ID'])
+    dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
+    print(f'INFO    {dict_new_old_cols}')
+    data = data.rename(columns=dict_new_old_cols)
+    data_copy = data.copy() # set a copy on the data 
+    label = get_label(data, transformer,  model) # get the labels
+    data_copy['Predicted Label'] = label
+    data_dict =  data_copy.to_dict('index')
+
+    print(f'INFO {data.to_markdown()}')
+
+
+    return {'ouputs': data_dict}
 
 
 if __name__=='__main__':
