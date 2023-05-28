@@ -3,7 +3,7 @@ from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from assets.utils import load_pickle, get_label, return_columns, process_csv
+from assets.utils import load_pickle, get_label, return_columns, process_csv, process_json
 from assets.module import Inputs
 from io import StringIO
 import pandas as pd
@@ -53,16 +53,10 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                          'Blood Pressure': [blood_pressure], 'Blood Work Result-2': [blood_work_result_2],
                         'Blood Work Result-3': [blood_work_result_3], 'Body Mass Index': [body_mass_index],
                         'Blood Work Result-4':	[blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
-
-    # set a copy on the dataframe
-    data_copy = data.copy()
-    # get the labels
-    label = get_label(data, transformer,  model)
-    # get the labels from making a prediction
-    data_copy['Predicted Label'] = label[0]
-    # convert dataframe to dicionary
-    data_dict =  data_copy.to_dict('index')
-
+    data_copy = data.copy() # set a copy on the dataframe
+    label = get_label(data, transformer,  model) # get the labels
+    data_copy['Predicted Label'] = label[0] # get the labels from making a prediction
+    data_dict =  data_copy.to_dict('index') # convert dataframe to dicionary
     return {'outputs': data_dict}
 
 
@@ -85,14 +79,21 @@ async def predict_batch(inputs: Inputs):
 
 @app.post("/upload-data")
 async def upload_data(file: UploadFile=File(...)):
-    contents = await file.read()  # Read the file contents as a byte string
-    data = process_csv(contents=contents)
+    file_type = file.content_type
+    print(f'INFO    {file_type}')
+    valid_formats = ['text/csv', 'application/json']
+    if file_type not in valid_formats:
+        return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
+    elif file_type==valid_formats[0]:
+        contents = await file.read()  # Read the file contents as a byte string
+        data = process_csv(contents=contents)
+    elif file_type == valid_formats[1]:
+        contents = await file.read()  # Read the file contents as a byte string
+        data = process_json(contents=contents)        
     data_copy = data.copy() # set a copy on the data 
     label = get_label(data, transformer,  model) # get the labels
     data_copy['Predicted Label'] = label # create the predicted label columns
     data_dict =  data_copy.to_dict('index') #convert data to dictionary
-
-    print(f'INFO {data.to_markdown()}')
     return {'ouputs': data_dict}
 
 
