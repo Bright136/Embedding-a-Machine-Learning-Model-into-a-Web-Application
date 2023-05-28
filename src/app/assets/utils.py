@@ -86,3 +86,15 @@ def process_csv(contents):
     print(f'INFO    {dict_new_old_cols}')
     data = data.rename(columns=dict_new_old_cols)
     return data
+
+def process_json(contents):
+     # Read the file contents as a byte string
+    contents = contents.decode()  # Decode the byte string to a regular string
+    new_columns = return_columns() # return new_columns
+    # Process the uploaded file
+    data = pd.read_json(contents)
+    data = data.drop(columns=['ID'])
+    dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
+    print(f'INFO    {dict_new_old_cols}')
+    data = data.rename(columns=dict_new_old_cols)
+    return data
