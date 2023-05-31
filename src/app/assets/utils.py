@@ -3,7 +3,13 @@ import pandas as pd
 import numpy as np
 import pickle
 from io import StringIO
+from cachetools import cached, TTLCache
 
+# Define the cache
+cache = TTLCache(maxsize=5, ttl=3600,)  # Cache with a maximum size of 1 and a TTL of 1 hour
+
+# # Load the model
+@cached(cache)
 def load_pickle(filename):
     with open(filename, 'rb') as file:
         contents = pickle.load(file)
