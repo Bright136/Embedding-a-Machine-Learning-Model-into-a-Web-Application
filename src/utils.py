@@ -3,13 +3,14 @@ import pandas as pd
 import numpy as np
 import pickle
 from io import StringIO
-from cachetools import cached, TTLCache
+from scipy.special import softmax
+# from cachetools import cached, TTLCache
 
-# Define the cache
-cache = TTLCache(maxsize=5, ttl=3600,)  # Cache with a maximum size of 1 and a TTL of 1 hour
+# # Define the cache
+# cache = TTLCache(maxsize=5, ttl=3600,)  # Cache with a maximum size of 1 and a TTL of 1 hour
 
-# # Load the model
-@cached(cache)
+# # # Load the model
+# @cached(cache)
 def load_pickle(filename):
     with open(filename, 'rb') as file:
         contents = pickle.load(file)
@@ -70,8 +71,17 @@ def get_label(data, transformer, model):
     combine_cats_nums(transformed_data, transformer)# create a dataframe from the transformed data 
     # make prediction
     label = model.predict(transformed_data) # make a prediction
-    return label
-    
+    probs = model.predict_proba(transformed_data)
+    return label, probs.max()
+
+
+
+# function to create a new column 'Bmi'
+def process_label(row):
+    if row['Predicted Label'] == 1:
+        return 'Sepsis status is Positive'
+    elif row['Predicted Label'] == 0:
+        return 'Sepsis status is Negative'
 
 def return_columns():
     # create new columns
