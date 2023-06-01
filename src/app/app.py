@@ -1,102 +1,130 @@
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 import uvicorn
 from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from assets.utils import load_pickle, get_label, return_columns, process_csv, process_json
-from assets.module import Inputs
-from io import StringIO
+from src.utils import load_pickle, get_label, return_columns, process_csv, process_json, process_label
+from src.module import Inputs
 import pandas as pd
 from typing import List
 
-# create an instance of FastApi
+
+# Create an instance of FastAPI
 app = FastAPI(debug=True)
-model = load_pickle('src/app/assets/model.pkl') # load the model
-transformer = load_pickle('src/app/assets/full_pipeline.pkl') # load the pipeline
-properties = load_pickle('src/app/assets/properties.pkl') # load the other properties saved from the modeling 
 
-# Configure static and template file
-app.mount("/static", StaticFiles(directory="src/app/static"), name="static") # mount statis files
-templates = Jinja2Templates(directory="src/app/templates") # mount templates for html
+DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
-# set display for root
+model_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'model.pkl')
+transformer_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'full_pipeline.pkl')
+properties_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'properties.pkl')
+
+
+# Load the trained model, pipeline, and other properties
+model = load_pickle(model_path)
+transformer = load_pickle(transformer_path)
+properties = load_pickle(properties_path)
+
+# Configure static and template files
+app.mount("/static", StaticFiles(directory="src/app/static"), name="static") # Mount static files
+templates = Jinja2Templates(directory="src/app/templates") # Mount templates for HTML
+
+# Root endpoint to serve index.html template
 @app.get("/", response_class=HTMLResponse)
 async def read_item(request: Request):
     return templates.TemplateResponse("index.html", {'request': request})
 
-
-# check the health status of the api
+# Health check endpoint
 @app.get("/health")
 def check_health():
     return {"status": "ok"}
 
-# get the model infomation
+# Model information endpoint
 @app.get('/model-info')
 async def model_info():
+    model_name = model.__class__.__name__
     model_params = model.get_params()
     features = properties['train features']
     print(features)
-    return {'model info': {
+    model_ =  {'model name ': model_name,
+            'model info': {
             'model parameters': model_params,
             'train feature': features}
             }
+    return model_
 
-# make a prediction with the api
+# Prediction endpoint
 @app.get('/predict')
 async def predict(plasma_glucose: float, blood_work_result_1: float, 
                   blood_pressure: float, blood_work_result_2: float, 
                   blood_work_result_3: float, body_mass_index: float, 
                   blood_work_result_4: float, age: int, insurance: bool):
     
-    # create dataframe from inputs 
-    data = pd.DataFrame({'Plasma Glucose': [plasma_glucose], 'Blood Work Result-1':	[blood_work_result_1],
+    # Create a dataframe from inputs 
+    data = pd.DataFrame({'Plasma Glucose': [plasma_glucose], 'Blood Work Result-1': [blood_work_result_1],
                          'Blood Pressure': [blood_pressure], 'Blood Work Result-2': [blood_work_result_2],
-                        'Blood Work Result-3': [blood_work_result_3], 'Body Mass Index': [body_mass_index],
-                        'Blood Work Result-4':	[blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
-    data_copy = data.copy() # set a copy on the dataframe
-    label = get_label(data, transformer,  model) # get the labels
-    data_copy['Predicted Label'] = label[0] # get the labels from making a prediction
-    data_dict =  data_copy.to_dict('index') # convert dataframe to dicionary
-    return {'outputs': data_dict}
+                         'Blood Work Result-3': [blood_work_result_3], 'Body Mass Index': [body_mass_index],
+                         'Blood Work Result-4': [blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
+    
+    data_copy = data.copy() # Create a copy of the dataframe
+    label, prob = get_label(data, transformer, model) # Get the labels
+    print(f'INFO    {label}')
+    print(f'INFO    {round(prob, 4)}')
+    data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
+    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
+    data_dict = data.to_dict('index') # Convert dataframe to dictionary
+    
+    response = {'inputs': data_dict,
+                'outputs': f"{str(data_copy['Predicted Label'].tolist()[0])} with probability of {prob * 100}%"}
+    return response
 
-
-# make a batch prediction
+# Batch prediction endpoint
 @app.post('/predict_batch')
 async def predict_batch(inputs: Inputs):
-    # create dataframe from inputs
+    # Create a dataframe from inputs
     data = pd.DataFrame(inputs.return_dict_inputs())
-    # rename the columsn in teh  dataframe to columns the transformer understands
-    data = data.rename(columns={'plasma_glucose': 'Plasma Glucose','blood_work_result_1':'Blood Work Result-1', 
-                            'blood_pressure':'Blood Pressure', 'blood_work_result_2':'Blood Work Result-2', 
-                            'blood_work_result_3':'Blood Work Result-3', 'body_mass_index':'Body Mass Index',
-                            'blood_work_result_4':'Blood Work Result-4', 'age': 'Age', 'insurance':'Insurance'})
-    data_copy = data.copy() # set a copy on the data 
-    label = get_label(data, transformer,  model) # get the labels
+
+    # Rename the columns in the dataframe to match the transformer's column names
+    data = data.rename(columns={'plasma_glucose': 'Plasma Glucose', 'blood_work_result_1': 'Blood Work Result-1', 
+                                'blood_pressure': 'Blood Pressure', 'blood_work_result_2': 'Blood Work Result-2', 
+                                'blood_work_result_3': 'Blood Work Result-3', 'body_mass_index': 'Body Mass Index',
+                                'blood_work_result_4': 'Blood Work Result-4', 'age': 'Age', 'insurance': 'Insurance'})
+    
+    data_copy = data.copy() # Create a copy of the data
+    label = get_label(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = label
-    data_dict =  data_copy.to_dict('index') # convert dataframe to dicionary
+    data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
+    
     return {'outputs': data_dict}
 
-
+# Upload data endpoint
 @app.post("/upload-data")
-async def upload_data(file: UploadFile=File(...)):
+async def upload_data(file: UploadFile = File(...)):
     file_type = file.content_type
     print(f'INFO    {file_type}')
     valid_formats = ['text/csv', 'application/json']
+    
     if file_type not in valid_formats:
         return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
-    elif file_type==valid_formats[0]:
+    
+    elif file_type == valid_formats[0]:
         contents = await file.read()  # Read the file contents as a byte string
         data = process_csv(contents=contents)
+        
     elif file_type == valid_formats[1]:
         contents = await file.read()  # Read the file contents as a byte string
-        data = process_json(contents=contents)        
-    data_copy = data.copy() # set a copy on the data 
-    label = get_label(data, transformer,  model) # get the labels
-    data_copy['Predicted Label'] = label # create the predicted label columns
-    data_dict =  data_copy.to_dict('index') #convert data to dictionary
-    return {'ouputs': data_dict}
+        data = process_json(contents=contents)
+        
+    data_copy = data.copy() # Create a copy of the data
+    label = get_label(data, transformer, model) # Get the labels
+    data_copy['Predicted Label'] = label # Create the predicted label column
+    data_dict = data_copy.to_dict('index') # Convert data to a dictionary
+    
+    return {'outputs': data_dict}
 
-
-if __name__=='__main__':
+# Run the FastAPI application
+if __name__ == '__main__':
     uvicorn.run('app:app', reload=True)
-
