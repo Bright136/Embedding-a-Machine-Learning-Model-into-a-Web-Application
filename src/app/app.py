@@ -89,7 +89,6 @@ async def predict_batch(inputs: Inputs):
     data_copy = data.copy() # Create a copy of the data
     labels, probs = get_label(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = labels
-    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
     data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
     return {'outputs': data_dict}
 
@@ -114,8 +113,8 @@ async def upload_data(file: UploadFile = File(...)):
         data = process_json(contents=contents)
         
     data_copy = data.copy() # Create a copy of the data
-    label = get_label(data, transformer, model) # Get the labels
-    data_copy['Predicted Label'] = label # Create the predicted label column
+    labels, probs = get_label(data, transformer, model) # Get the labels
+    data_copy['Predicted Label'] = labels# Create the predicted label column
     data_dict = data_copy.to_dict('index') # Convert data to a dictionary
     
     return {'outputs': data_dict}
