@@ -72,34 +72,28 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
     
     data_copy = data.copy() # Create a copy of the dataframe
     label, prob = get_label(data, transformer, model) # Get the labels
-    print(f'INFO    {label}')
-    print(f'INFO    {round(prob, 4)}')
     data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
     data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
-    data_dict = data.to_dict('index') # Convert dataframe to dictionary
-    
-    response = {'inputs': data_dict,
-                'outputs': f"{data_copy['Predicted Label']} with probability of {prob * 100}%"}
+    inputs = data.to_dict('index') # Convert dataframe to dictionary
+    outputs = data_copy[['Predicted Label']].to_dict('index')    
+    response = {'inputs': inputs,
+                'outputs': outputs}
     return response
+
 
 # Batch prediction endpoint
 @app.post('/predict_batch')
 async def predict_batch(inputs: Inputs):
     # Create a dataframe from inputs
     data = pd.DataFrame(inputs.return_dict_inputs())
-
-    # Rename the columns in the dataframe to match the transformer's column names
-    data = data.rename(columns={'plasma_glucose': 'Plasma Glucose', 'blood_work_result_1': 'Blood Work Result-1', 
-                                'blood_pressure': 'Blood Pressure', 'blood_work_result_2': 'Blood Work Result-2', 
-                                'blood_work_result_3': 'Blood Work Result-3', 'body_mass_index': 'Body Mass Index',
-                                'blood_work_result_4': 'Blood Work Result-4', 'age': 'Age', 'insurance': 'Insurance'})
-    
     data_copy = data.copy() # Create a copy of the data
-    label = get_label(data, transformer, model) # Get the labels
-    data_copy['Predicted Label'] = label
+    labels, probs = get_label(data, transformer, model) # Get the labels
+    data_copy['Predicted Label'] = labels
+    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
     data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
-    
     return {'outputs': data_dict}
+
+
 
 # Upload data endpoint
 @app.post("/upload-data")
