@@ -49,12 +49,13 @@ async def model_info():
     model_params = model.get_params()
     features = properties['train features']
     print(features)
-    model_ =  {'model name ': model_name,
-            'model info': {
+    model_information =  {'model info': {
+            'model name ': model_name,
             'model parameters': model_params,
             'train feature': features}
             }
-    return model_
+    return model_information
+ 
 
 # Prediction endpoint
 @app.get('/predict')
@@ -78,7 +79,7 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
     data_dict = data.to_dict('index') # Convert dataframe to dictionary
     
     response = {'inputs': data_dict,
-                'outputs': f"{str(data_copy['Predicted Label'].tolist()[0])} with probability of {prob * 100}%"}
+                'outputs': f"{data_copy['Predicted Label']} with probability of {prob * 100}%"}
     return response
 
 # Batch prediction endpoint

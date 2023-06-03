@@ -44,6 +44,7 @@ def blood_pressure_ranges(row):
 
 
 def feature_engineering(data):
+    data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
     # create features the BMI_Range and BP_Range for x_train
     data['BMI_Range'] = data.apply(create_bmi_range, axis=1)
     data['BP_range'] = data.apply(blood_pressure_ranges, axis=1)
@@ -65,7 +66,9 @@ def combine_cats_nums(transformed_data, full_pipeline):
     
 
 def get_label(data, transformer, model):
-    data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
+    new_columns = return_columns() 
+    dict_new_old_cols = dict(zip(data.columns, new_columns))
+    data = data.rename(columns=dict_new_old_cols)
     feature_engineering(data) # create new features
     transformed_data = transformer.transform(data) # transform the data using the transformer    
     combine_cats_nums(transformed_data, transformer)# create a dataframe from the transformed data 
