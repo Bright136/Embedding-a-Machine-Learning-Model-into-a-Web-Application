@@ -43,23 +43,51 @@ def blood_pressure_ranges(row):
         return 'high'
 
 
+
+
 def feature_engineering(data):
     data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
-    # create features the BMI_Range and BP_Range for x_train
-    data['BMI_Range'] = data.apply(create_bmi_range, axis=1)
-    data['BP_range'] = data.apply(blood_pressure_ranges, axis=1)
-    # create age group
-    age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 81,20)]
-    data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels)
+    # create features 
+    data['All-Product']  = data['Blood Work Result-4'] * data['Blood Work Result-1']* data['Blood Work Result-2']* data['Blood Work Result-3'] * data['Plasma Glucose']* data['Blood Pressure'] * data['Age']* data['Body Mass Index'] # Multiply all numerical features
 
-    data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index'], inplace=True) # drop columns 
+    all_labels =['{0}-{1}'.format(i, i+500000000000) for i in range(0, round(2714705253292.0312),500000000000)]
+    data['All-Product_range'] = pd.cut(data['All-Product'], bins=(range(0, 3500000000000, 500000000000)), right=False, labels=all_labels)
+    
+    age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 83,20)]
+    data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels) # create categorical features for age
+
+    labels =['{0}-{1}'.format(i, i+30) for i in range(0, round(67.1),30)]
+    data['BMI_range'] = pd.cut(data['Body Mass Index'], bins=(range(0, 120, 30)), right=False, labels=labels) # create categorical features for bodey mass index
+
+    bp_labels =['{0}-{1}'.format(i, i+50) for i in range(0, round(122),50)] 
+    data['BP_range'] = pd.cut(data['Blood Pressure'], bins=(range(0, 200, 50)), right=False, labels=bp_labels) # create categorical features for blood pressure
+
+    labels =['{0}-{1}'.format(i, i+7) for i in range(0, round(17),7)]
+    data['PG_range'] = pd.cut(data['Plasma Glucose'], bins=(range(0, 28, 7)), right=False, labels=labels) # create categorical features for plasma glucose
+
+    data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index','Plasma Glucose', 'All-Product', 'Blood Work Result-3', 'Blood Work Result-2'], inplace=True) # drop unused columns
+
+# 67.1
+# min: 0, max: 122
+# min: 0, max: 17
+# 2714705253292.0312
+
+# def feature_engineering(data):
+#     data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
+#     # create features the BMI_Range and BP_Range for data
+#     data['BMI_Range'] = data.apply(create_bmi_range, axis=1)
+#     data['BP_range'] = data.apply(blood_pressure_ranges, axis=1)
+#     # create age group
+#     age_labels =['{0}-{1}'.format(i, i+20) for i in range(0, 81,20)]
+#     data['Age Group'] = pd.cut(data['Age'], bins=(range(0, 120, 20)), right=False, labels=age_labels)
+
+#     data.drop(columns=['Blood Pressure', 'Age', 'Body Mass Index'], inplace=True) # drop columns 
     
 
 
 def combine_cats_nums(transformed_data, full_pipeline):
     cat_features = full_pipeline.named_transformers_['categorical']['cat_encoder'].get_feature_names() # get the feature from the categorical transformer
-    num_features = ['Plasma Glucose', 'Blood Work Result-1', 'Blood Work Result-2',
-                    'Blood Work Result-3', 'Blood Work Result-4']
+    num_features = ['Blood Work Result-1', 'Blood Work Result-4']
     columns_ = np.concatenate([num_features, cat_features]) # concatenate numerical and categorical features
     prepared_data = pd.DataFrame(transformed_data, columns=columns_) # create a dataframe from the transformed data
     prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'}) # rename columns
