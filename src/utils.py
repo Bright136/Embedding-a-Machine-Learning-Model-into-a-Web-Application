@@ -93,7 +93,7 @@ def combine_cats_nums(transformed_data, full_pipeline):
     prepared_data = prepared_data.rename(columns={'x0_0':'Insurance_0', 'x0_1': 'Insurance_1'}) # rename columns
     
 
-def get_label(data, transformer, model):
+def make_prediction(data, transformer, model):
     new_columns = return_columns() 
     dict_new_old_cols = dict(zip(data.columns, new_columns))
     data = data.rename(columns=dict_new_old_cols)
