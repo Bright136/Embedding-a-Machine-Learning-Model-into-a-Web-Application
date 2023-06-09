@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from src.utils import load_pickle, get_label, return_columns, process_csv, process_json, process_label
+from src.utils import load_pickle, make_prediction, process_csv, process_json, process_label
 from src.module import Inputs
 import pandas as pd
 from typing import List
@@ -18,8 +18,8 @@ app = FastAPI(debug=True)
 
 DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
-model_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'model.pkl')
-transformer_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'full_pipeline.pkl')
+model_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'model-1.pkl')
+transformer_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'preprocessor.pkl')
 properties_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'properties.pkl')
 
 
@@ -34,7 +34,7 @@ templates = Jinja2Templates(directory="src/app/templates") # Mount templates for
 
 # Root endpoint to serve index.html template
 @app.get("/", response_class=HTMLResponse)
-async def read_item(request: Request):
+async def root(request: Request):
     return templates.TemplateResponse("index.html", {'request': request})
 
 # Health check endpoint
@@ -43,7 +43,7 @@ def check_health():
     return {"status": "ok"}
 
 # Model information endpoint
-@app.get('/model-info')
+@app.post('/model-info')
 async def model_info():
     model_name = model.__class__.__name__
     model_params = model.get_params()
@@ -58,7 +58,7 @@ async def model_info():
  
 
 # Prediction endpoint
-@app.get('/predict')
+@app.post('/predict')
 async def predict(plasma_glucose: float, blood_work_result_1: float, 
                   blood_pressure: float, blood_work_result_2: float, 
                   blood_work_result_3: float, body_mass_index: float, 
@@ -71,7 +71,7 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                          'Blood Work Result-4': [blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
     
     data_copy = data.copy() # Create a copy of the dataframe
-    label, prob = get_label(data, transformer, model) # Get the labels
+    label, prob = make_prediction(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
     data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
     inputs = data.to_dict('index') # Convert dataframe to dictionary
@@ -87,10 +87,22 @@ async def predict_batch(inputs: Inputs):
     # Create a dataframe from inputs
     data = pd.DataFrame(inputs.return_dict_inputs())
     data_copy = data.copy() # Create a copy of the data
-    labels, probs = get_label(data, transformer, model) # Get the labels
+    labels, probs = make_prediction(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = labels
-    data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
-    return {'outputs': data_dict}
+    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
+
+    # data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
+    results_list = []
+
+    for row1, row2 in zip(data.itertuples(index=False), data_copy[['Predicted Label']] .itertuples(index=False)):
+        dictionary_from_dataframe1 = row1._asdict()
+        dictionary_from_dataframe2 = row2._asdict()
+        results_list.append({'input': dictionary_from_dataframe1, 'output': dictionary_from_dataframe2})
+
+        final_dict = {'results': results_list}
+
+    print(f'INFO     {data_copy.itertuples()}')
+    return final_dict
 
 
 
@@ -113,10 +125,11 @@ async def upload_data(file: UploadFile = File(...)):
         data = process_json(contents=contents)
         
     data_copy = data.copy() # Create a copy of the data
-    labels, probs = get_label(data, transformer, model) # Get the labels
+    labels, probs = make_prediction(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = labels# Create the predicted label column
     data_dict = data_copy.to_dict('index') # Convert data to a dictionary
     
+
     return {'outputs': data_dict}
 
 # Run the FastAPI application
