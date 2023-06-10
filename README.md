@@ -23,6 +23,8 @@
 ## Table of Contents
 1. [Overview Of the Project](#overview)
 
+  - [Description of dataset](#dataset)
+
 2. [Application / Deployed Links](#application)
 
 3. [Technology Stack](#technology)
@@ -35,13 +37,13 @@
 
 7. [App Usage](#usage)
 
-9. [API Endpoints](#api-endpoints)
+8. [API Endpoints](#api-endpoints)
 
-10. [Collaborators](#collaborators)
+9. [Collaborators](#collaborators)
 
-11. [Contributing Instructions](#instructions)
+10. [Contributing Instructions](#instructions)
 
-12. [Contact Information](#ontact)
+11. [Contact Information](#ontact)
 
 
 ## 1. Overview Of the Project <a name="overview"></a>
@@ -54,7 +56,72 @@
 
 - Detailed documentation and practical examples are provided to guide users in effectively utilizing the sepsis prediction model. The documentation covers installation instructions, API usage guidelines, and highlights the potential applications of the model in real-world healthcare scenarios, empowering healthcare providers to make informed decisions and enhance patient outcomes.
 
+### i. Description of dataset <a name="dataset"></a>
 
+Here is the provided information converted into an HTML table:
+
+<table>
+  <tr>
+    <th>Column Name</th>
+    <th>Attribute/Target</th>
+    <th>Description</th>
+  </tr>
+  <tr>
+    <td>ID</td>
+    <td>N/A</td>
+    <td>Unique number to represent patient ID</td>
+  </tr>
+  <tr>
+    <td>PRG</td>
+    <td>Attribute1</td>
+    <td>Plasma glucose</td>
+  </tr>
+  <tr>
+    <td>PL</td>
+    <td>Attribute 2</td>
+    <td>Blood Work Result-1 (mu U/ml)</td>
+  </tr>
+  <tr>
+    <td>PR</td>
+    <td>Attribute 3</td>
+    <td>Blood Pressure (mm Hg)</td>
+  </tr>
+  <tr>
+    <td>SK</td>
+    <td>Attribute 4</td>
+    <td>Blood Work Result-2 (mm)</td>
+  </tr>
+  <tr>
+    <td>TS</td>
+    <td>Attribute 5</td>
+    <td>Blood Work Result-3 (mu U/ml)</td>
+  </tr>
+  <tr>
+    <td>M11</td>
+    <td>Attribute 6</td>
+    <td>Body mass index (weight in kg/(height in m)^2)</td>
+  </tr>
+  <tr>
+    <td>BD2</td>
+    <td>Attribute 7</td>
+    <td>Blood Work Result-4 (mu U/ml)</td>
+  </tr>
+  <tr>
+    <td>Age</td>
+    <td>Attribute 8</td>
+    <td>Patients age (years)</td>
+  </tr>
+  <tr>
+    <td>Insurance</td>
+    <td>N/A</td>
+    <td>If a patient holds a valid insurance card</td>
+  </tr>
+  <tr>
+    <td>Sepssis</td>
+    <td>Target</td>
+    <td>Positive: if a patient in ICU will develop sepsis, and Negative: otherwise</td>
+  </tr>
+</table>
 
 ## 2. Application / Deployed Links <a name="application"></a>
 <table>
@@ -150,7 +217,7 @@ Create a new virtual environment and activate the virtual:
 
 
 
-## Execution <a name='execution'></a>
+## 6. Execution <a name='execution'></a>
 1. Notebooks
 
 To run any the notebooks:
@@ -178,7 +245,7 @@ OR
 
 Open your browser and go to http://127.0.0.1:8000/docs to access the API documentation
 
-## Endpoints <a name="api-endpoints"></a>
+## 7. Endpoints <a name="api-endpoints"></a>
 
 1. **/**: This Endpoint display a welcome message-” Welcome to the Sepsis API...”.
 2. **/health**: Checks status of the API
@@ -187,7 +254,7 @@ Open your browser and go to http://127.0.0.1:8000/docs to access the API documen
 5. **/predict-batch**: Receives multiples inputs and returns multiple predictions
 5. **/upload-data**: Receives JSON or CSV file, process it and returns predictions
 
-## 7. App Usage <a name="usage"></a>
+## 8. App Usage <a name="usage"></a>
 To test the various endpoints of the API using the provided documentation, follow these steps:
 
 1. Start by accessing the API documentation, which provides detailed information about the available endpoints and their functionalities.
@@ -204,10 +271,10 @@ To test the various endpoints of the API using the provided documentation, follo
 7. Repeat the process to test different endpoints or vary the input data to explore the capabilities of the API. Make sure to follow the documentation's guidelines for each endpoint to ensure accurate results.
 
 
-## 8. Collaborators <a name="collaborators"></a>
+## 9. Collaborators <a name="collaborators"></a>
 
 
-## 9. Contributing Instructions <a name="instructions"></a>
+## 10. Contributing Instructions <a name="instructions"></a>
 To contribute to this project, follow these guidelines:
 
 - Fork the repository.
@@ -216,7 +283,7 @@ To contribute to this project, follow these guidelines:
 - Push to the branch: git push origin my-new-feature
 - Create a new pull request
 
-## 10. Contact Information <a name="contact"></a>
+## 11. Contact Information <a name="contact"></a>
 
 <table>
   <tr>
