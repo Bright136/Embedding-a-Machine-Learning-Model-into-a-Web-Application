@@ -1,0 +1,3 @@
+Article were publised on this project on medium. Kinldy access them in the link provided below:
+- <a  href='https://brighteshun.medium.com/sepsis-prediction-in-patients-insights-from-machine-learning-and-clinical-data-e7ed1ff750c1'>Sepsis Prediction with Machine Learning.</a>
+- <a  href='https://brighteshun.medium.com/building-a-machine-learning-api-with-fastapi-8450f4a4d859'>Building an API with FastAPI.</a>
