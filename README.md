@@ -31,18 +31,30 @@
 
 5. [Installation](#installation)
 
-6. [Configuration Setup](#setup)
+6. [Execution](#execution)
 
 7. [App Usage](#usage)
 
-8. [Collaborators](#collaborators)
+9. [API Endpoints](#api-endpoints)
 
-9. [Contributing Instructions](#instructions)
+10. [Collaborators](#collaborators)
 
-10. [Contact Information](#ontact)
+11. [Contributing Instructions](#instructions)
+
+12. [Contact Information](#ontact)
 
 
 ## 1. Overview Of the Project <a name="overview"></a>
+
+- The sepsis prediction project revolves around a machine learning model designed to accurately predict sepsis in intensive care unit (ICU) patients. The model has undergone rigorous training and evaluation to ensure its effectiveness in identifying patients at risk of sepsis.
+
+- The project provides a comprehensive solution, including a well-documented FastAPI hosted on a platform like the Hugging Face Model Hub and Heroku. This API allows seamless integration of the sepsis prediction model into existing healthcare systems, providing healthcare professionals with valuable insights to improve patient care.
+
+- To simplify deployment and usage, the project includes a Dockerfile that streamlines the setup process and ensures the necessary dependencies are installed. This enables easy deployment of the sepsis prediction model in various environments, both local and cloud-based.
+
+- Detailed documentation and practical examples are provided to guide users in effectively utilizing the sepsis prediction model. The documentation covers installation instructions, API usage guidelines, and highlights the potential applications of the model in real-world healthcare scenarios, empowering healthcare providers to make informed decisions and enhance patient outcomes.
+
+
 
 ## 2. Application / Deployed Links <a name="application"></a>
 <table>
@@ -52,7 +64,11 @@
   </tr>
   <tr>
     <td>FastApi</td>
-    <td><a href="">Sepsis Prediction</a></td>
+    <td><a href="https://bright1-sepsis-prediction-api.hf.space/docs">Sepsis Prediction API-huggingface</a></td>
+  </tr>
+  <tr>
+    <td>FastApi</td>
+    <td><a href="https://radiant-lowlands-86946.herokuapp.com/docs">Sepsis Prediction API-heroku</a></td>
   </tr>
 
 </table>
@@ -81,16 +97,35 @@
     <td>3.9</td>
   </tr>
   <tr>
-    <td></td>
-    <td></td>
+    <td>FastAPI</td>
+    <td>0.95.2</td>
   </tr>
   <tr>
-    <td></td>
-    <td></td>
+    <td>Uvicorn</td>
+    <td>0.22.0</td>
   </tr>
+    <tr>
+    <td>Scikit-learn</td>
+    <td>0.24.1</td>
+  </tr>
+  </tr>
+    <tr>
+    <td>Pandas</td>
+    <td>1.2.4</td>
+  </tr>
+  </tr>
+    <tr>
+    <td>Jinja2</td>
+    <td>3.1.2</td>
+  </tr>
+  
 </table>
 
 ## 4. Deliverables <a name="deliverables"></a>
+1. A jupyter notebook for training a classification model
+2. A classification Model
+3. An API App built with FastApi
+4. A Dockerfile for easy deployment 
 
 
 
@@ -98,11 +133,11 @@
 Clone the repository to your local machine:
 
 
-        git clone https://github.com/your-username/your-project.git
+        git clone https://github.com/Bright136/Embedding-a-Machine-Learning-Model-into-a-Web-Application.git
 
 Navigate to the project directory:
 
-        cd your-project
+        cd Embedding-a-Machine-Learning-Model-into-a-Web-Application
 Create a new virtual environment and activate the virtual:
 
 - Windows:
@@ -115,33 +150,51 @@ Create a new virtual environment and activate the virtual:
 
 
 
-
-
-## Execution
+## Execution <a name='execution'></a>
 1. Notebooks
 
 To run any the notebooks:
+- Navigate the project folder on anaconda terminal
+- run the command 'jupyter notebook'
+- Navigate to the notebook 'Sepssis_prediction_with_ml.ipynb'
+- Run cells in the notebook
 
 
+2. API
 
-
-2. App
-
-To execute the app, follow these steps:
+To execute the API, follow these steps:
 After all requirement have been install
 
 At the root of your repository in your terminal
-`root :: > ...`
+`root :: Embedding-a-Machine-Learning-Model-into-a-Web-Application> ...`
 run the command:
 
 
-            gradio app.py
+            uvicorn src.app.app:app --reload 
 
-Open your browser and go to http://127.0.0.1:8080
+OR
 
+            python src/app/app.py
 
+Open your browser and go to http://127.0.0.1:8000/docs to access the API documentation
+
+## Endpoints <a name="api-endpoints"></a>
 
 ## 7. App Usage <a name="usage"></a>
+To test the various endpoints of the API using the provided documentation, follow these steps:
+
+1. Start by accessing the API documentation, which provides detailed information about the available endpoints and their functionalities.
+
+2. Locate the section that describes the input fields and parameters required for each endpoint. It will specify the expected data format, such as JSON or form data, and the necessary input fields.
+
+
+4. Enter the required input data into the corresponding input fields or parameters as specified in the documentation.
+
+5. Send the request by clicking the "Execute" button or using the appropriate method in your chosen tool. The API will process the request and generate the output based on the provided inputs.
+
+6. Retrieve the response from the API, which will contain the generated output. This output may include predictions, probability scores, or any other relevant information related to sepsis prediction.
+
+7. Repeat the process to test different endpoints or vary the input data to explore the capabilities of the API. Make sure to follow the documentation's guidelines for each endpoint to ensure accurate results.
 
 
 ## 8. Collaborators <a name="collaborators"></a>
