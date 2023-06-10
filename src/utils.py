@@ -16,9 +16,6 @@ def load_pickle(filename):
     return contents
 
 
-def filetype_error(valid_formats):
-    return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
-
 
 def feature_engineering(data):
     data['Insurance'] = data['Insurance'].astype(int).astype(str) # run function to create new features
@@ -99,4 +96,14 @@ def process_json_csv(contents, file_type, valid_formats):
     return data
 
         
-    
+def output_batch(data1, data2):
+    # data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
+    results_list = []
+
+    for row1, row2 in zip(data1.itertuples(index=False), data2.itertuples(index=False)):
+        dictionary_from_dataframe1 = row1._asdict()
+        dictionary_from_dataframe2 = row2._asdict()
+        results_list.append({'input': dictionary_from_dataframe1, 'output': dictionary_from_dataframe2})
+
+        final_dict = {'results': results_list}
+    return final_dict
