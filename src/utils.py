@@ -16,7 +16,8 @@ def load_pickle(filename):
     return contents
 
 
-
+def filetype_error(valid_formats):
+    return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
 
 
 def feature_engineering(data):
@@ -81,49 +82,20 @@ def return_columns():
     return new_columns
 
 
-def process_csv(contents):
-     # Read the file contents as a byte string
+def process_json_csv(contents, file_type, valid_formats):
+
+    # Read the file contents as a byte string
     contents = contents.decode()  # Decode the byte string to a regular string
     new_columns = return_columns() # return new_columns
+    if file_type == valid_formats[0]:
+        data = pd.read_csv(StringIO(contents))
     # Process the uploaded file
-    data = pd.read_csv(StringIO(contents))
+    elif file_type == valid_formats[1]:
+        data = pd.read_json(contents)
     data = data.drop(columns=['ID'])
     dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
     print(f'INFO    {dict_new_old_cols}')
     data = data.rename(columns=dict_new_old_cols)
-    return data
-
-def process_json(contents):
-     # Read the file contents as a byte string
-    contents = contents.decode()  # Decode the byte string to a regular string
-    new_columns = return_columns() # return new_columns
-    # Process the uploaded file
-    data = pd.read_json(contents)
-    data = data.drop(columns=['ID'])
-    dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
-    print(f'INFO    {dict_new_old_cols}')
-    data = data.rename(columns=dict_new_old_cols)
-    return data
-
-def process_json_csv(contents, file_type):
-
-    valid_formats = ['text/csv', 'application/json']
-    if file_type not in valid_formats:
-        return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
-     # Read the file contents as a byte string
-    else:
-        # Read the file contents as a byte string
-        contents = contents.decode()  # Decode the byte string to a regular string
-        new_columns = return_columns() # return new_columns
-        if file_type == valid_formats[0]:
-            data = pd.read_csv(StringIO(contents))
-        # Process the uploaded file
-        elif file_type == valid_formats[1]:
-            data = pd.read_json(contents)
-        data = data.drop(columns=['ID'])
-        dict_new_old_cols = dict(zip(data.columns, new_columns)) # get dict of new and old cols
-        print(f'INFO    {dict_new_old_cols}')
-        data = data.rename(columns=dict_new_old_cols)
     return data
 
         
