@@ -155,7 +155,7 @@ Create a new virtual environment and activate the virtual:
 
 To run any the notebooks:
 - Navigate the project folder on anaconda terminal
-- run the command 'jupyter notebook'
+- Run the command 'jupyter notebook'
 - Navigate to the notebook 'Sepssis_prediction_with_ml.ipynb'
 - Run cells in the notebook
 
@@ -179,6 +179,13 @@ OR
 Open your browser and go to http://127.0.0.1:8000/docs to access the API documentation
 
 ## Endpoints <a name="api-endpoints"></a>
+
+1. **/**: This Endpoint display a welcome message-” Welcome to the Sepsis API...”.
+2. **/health**: Checks status of the API
+3. **model-info**: Returns model information
+4. **/predict**: Recieve inouts and retuens a single prediction.
+5. **/predict-batch**: Receives multiples inputs and returns multiple predictions
+5. **/upload-data**: Receives JSON or CSV file, process it and returns predictions
 
 ## 7. App Usage <a name="usage"></a>
 To test the various endpoints of the API using the provided documentation, follow these steps:
