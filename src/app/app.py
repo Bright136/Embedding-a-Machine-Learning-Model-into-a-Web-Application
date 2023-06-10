@@ -7,9 +7,10 @@ from fastapi import FastAPI, Request, File, UploadFile
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from src.utils import load_pickle, make_prediction, process_label, process_json_csv, filetype_error
+from src.utils import load_pickle, make_prediction, process_label, process_json_csv, output_batch, return_columns
 from src.module import Inputs
 import pandas as pd
+import numpy as np
 from typing import List
 
 
@@ -65,11 +66,10 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                   blood_work_result_4: float, age: int, insurance: bool):
     
     # Create a dataframe from inputs 
-    data = pd.DataFrame({'Plasma Glucose': [plasma_glucose], 'Blood Work Result-1': [blood_work_result_1],
-                         'Blood Pressure': [blood_pressure], 'Blood Work Result-2': [blood_work_result_2],
-                         'Blood Work Result-3': [blood_work_result_3], 'Body Mass Index': [body_mass_index],
-                         'Blood Work Result-4': [blood_work_result_4], 'Age': [age], 'Insurance': [insurance]})
-    
+    data = pd.DataFrame([[plasma_glucose,blood_work_result_1,blood_pressure,
+                           blood_work_result_2,blood_work_result_3,body_mass_index, 
+                           blood_work_result_4, age,insurance]], columns=return_columns())
+
     data_copy = data.copy() # Create a copy of the dataframe
     label, prob = make_prediction(data, transformer, model) # Get the labels
     data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
@@ -88,21 +88,12 @@ async def predict_batch(inputs: Inputs):
     data = pd.DataFrame(inputs.return_dict_inputs())
     data_copy = data.copy() # Create a copy of the data
     labels, probs = make_prediction(data, transformer, model) # Get the labels
-    data_copy['Predicted Label'] = labels
-    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
+    data_labels = pd.DataFrame(labels, columns=['Predicted Label'])
+    data_labels['Predicted Label'] = data_labels.apply(process_label, axis=1)
 
-    # data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
-    results_list = []
+    response = output_batch(data, data_labels)
 
-    for row1, row2 in zip(data.itertuples(index=False), data_copy[['Predicted Label']] .itertuples(index=False)):
-        dictionary_from_dataframe1 = row1._asdict()
-        dictionary_from_dataframe2 = row2._asdict()
-        results_list.append({'input': dictionary_from_dataframe1, 'output': dictionary_from_dataframe2})
-
-        final_dict = {'results': results_list}
-
-    print(f'INFO     {data_copy.itertuples()}')
-    return final_dict
+    return response
 
 
 
@@ -125,7 +116,7 @@ async def upload_data(file: UploadFile = File(...)):
         data_copy['Predicted Label'] = labels# Create the predicted label column
         data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
         data_dict = data_copy.to_dict('index') # Convert data to a dictionary
-    
+        # print(data_dict.index)
 
     return {'outputs': data_dict}
 
