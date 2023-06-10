@@ -283,6 +283,13 @@ To contribute to this project, follow these guidelines:
 - Push to the branch: git push origin my-new-feature
 - Create a new pull request
 
+
+
+
+https://github.com/Bright136/Embedding-a-Machine-Learning-Model-into-a-Web-Application/assets/94003056/6d544350-61f9-4b26-aff9-33e57e7242ee
+
+
+
 ## 11. Contact Information <a name="contact"></a>
 
 <table>
