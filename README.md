@@ -7,17 +7,13 @@
 ![PR](https://img.shields.io/github/issues-pr/eaedk/streamlit-iris-app?style=for-the-badge&logo=appveyor)
 [![Open Source Love png1](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
-
-## Screenshots of the App
 <div align='center'> 
-    <img src=""/>
+    <img src="https://drive.google.com/uc?export=view&id=1-GmoFPnY5W0Pi6dtnmOrcGOgQINdLUci"/>
 
 </div>
 
-
-
 ## Project Description 
-
+This project combines machine learning and FastAPI to develop a powerful and scalable application for predictive analytics and real-time data processing."
 
 
 ## Table of Contents
@@ -283,8 +279,7 @@ To contribute to this project, follow these guidelines:
 - Push to the branch: git push origin my-new-feature
 - Create a new pull request
 
-
-
+### Screenshot of the API
 
 https://github.com/Bright136/Embedding-a-Machine-Learning-Model-into-a-Web-Application/assets/94003056/6d544350-61f9-4b26-aff9-33e57e7242ee
 
