@@ -17,8 +17,10 @@ from typing import List
 # Create an instance of FastAPI
 app = FastAPI(debug=True)
 
+# get absolute path
 DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
+# set path for pickle files
 model_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'model-1.pkl')
 transformer_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'preprocessor.pkl')
 properties_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'other-components.pkl')
@@ -70,11 +72,7 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                            blood_work_result_4, age,insurance]], columns=return_columns())
 
     # data_copy = data.copy() # Create a copy of the dataframe
-    labels, prob = make_prediction(data, transformer, model) # Get the labels
-    # data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
-    # data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
-    # inputs = data.to_dict('index') # Convert dataframe to dictionary
-    # outputs = data_copy[['Predicted Label']].to_dict('index')    
+    labels, prob = make_prediction(data, transformer, model) # Get the labels  
     response = output_batch(data, labels) # output results
     return response
 
@@ -94,17 +92,14 @@ async def predict_batch(inputs: Inputs):
 # Upload data endpoint
 @app.post("/upload-data")
 async def upload_data(file: UploadFile = File(...)):
-    file_type = file.content_type
-    print(f'INFO    {file_type}')
-
-    valid_formats = ['text/csv', 'application/json']
-    
+    file_type = file.content_type # get the type of the uploaded file
+    valid_formats = ['text/csv', 'application/json'] # create a list of valid formats API can receive
     if file_type not in valid_formats:
-        return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
+        return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"}) # return an error if file type is not included in the valid formats
     
     else:
         contents = await file.read() # read contents in file
-        data= process_json_csv(contents=contents,file_type=file_type, valid_formats=valid_formats)  
+        data= process_json_csv(contents=contents,file_type=file_type, valid_formats=valid_formats) # process files  
         labels, probs = make_prediction(data, transformer, model) # Get the labels
         response = output_batch(data, labels) # output results
 
