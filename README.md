@@ -8,7 +8,7 @@
 [![Open Source Love png1](https://badges.frapsoft.com/os/v1/open-source.png?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
 <div align='center'> 
-    <img src="https://drive.google.com/uc?export=view&id=1-GmoFPnY5W0Pi6dtnmOrcGOgQINdLUci"/>
+    <img src="https://drive.google.com/uc?export=view&id=1FSw-ora9cu92d1YyK1HYxcPjm0_uQ296"/>
 
 </div>
 
@@ -31,15 +31,13 @@ This project combines machine learning and FastAPI to develop a powerful and sca
 
 6. [Execution](#execution)
 
-7. [App Usage](#usage)
+7. [API Endpoints](#api-endpoints)
 
-8. [API Endpoints](#api-endpoints)
+8. [App Usage](#usage)
 
-9. [Collaborators](#collaborators)
+9. [Contributing Instructions](#instructions)
 
-10. [Contributing Instructions](#instructions)
-
-11. [Contact Information](#ontact)
+10. [Contact Information](#ontact)
 
 
 ## 1. Overview Of the Project <a name="overview"></a>
@@ -266,11 +264,7 @@ To test the various endpoints of the API using the provided documentation, follo
 
 7. Repeat the process to test different endpoints or vary the input data to explore the capabilities of the API. Make sure to follow the documentation's guidelines for each endpoint to ensure accurate results.
 
-
-## 9. Collaborators <a name="collaborators"></a>
-
-
-## 10. Contributing Instructions <a name="instructions"></a>
+## 9. Contributing Instructions <a name="instructions"></a>
 To contribute to this project, follow these guidelines:
 
 - Fork the repository.
@@ -285,7 +279,7 @@ https://github.com/Bright136/Embedding-a-Machine-Learning-Model-into-a-Web-Appli
 
 
 
-## 11. Contact Information <a name="contact"></a>
+## 10. Contact Information <a name="contact"></a>
 
 <table>
   <tr>
