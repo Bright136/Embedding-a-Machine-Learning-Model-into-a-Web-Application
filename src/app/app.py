@@ -21,7 +21,7 @@ DIRPATH = os.path.dirname(os.path.realpath(__file__))
 
 model_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'model-1.pkl')
 transformer_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'preprocessor.pkl')
-properties_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'properties.pkl')
+properties_path = os.path.join(DIRPATH, '..', 'assets', 'ml_components', 'other-components.pkl')
 
 
 # Load the trained model, pipeline, and other properties
@@ -46,16 +46,15 @@ def check_health():
 # Model information endpoint
 @app.post('/model-info')
 async def model_info():
-    model_name = model.__class__.__name__
-    model_params = model.get_params()
-    features = properties['train features']
-    print(features)
+    model_name = model.__class__.__name__ # get model name 
+    model_params = model.get_params() # get model parameters
+    features = properties['train features'] # get training feature
     model_information =  {'model info': {
             'model name ': model_name,
             'model parameters': model_params,
             'train feature': features}
             }
-    return model_information
+    return model_information # return model information
  
 
 # Prediction endpoint
