@@ -91,15 +91,12 @@ def process_json_csv(contents, file_type, valid_formats):
     return data
 
         
-def output_batch(data1, data2):
-    # data_dict = data_copy.to_dict('index') # Convert the data to a dictionary
+def output_batch(data1, labels):
+    data_labels = pd.DataFrame(labels, columns=['Predicted Label'])
+    data_labels['Predicted Label'] = data_labels.apply(process_label, axis=1)
     results_list = []
-    # for index in range(len(data1)):
-    #     row1 = data1.iloc(index).to_dict()
-    #     row2 = data2.iloc(index).to_dict()
-    #     results_list.append({'input': row1, 'output': row2})
     x = data1.to_dict('index')
-    y = data2.to_dict('index')
+    y = data_labels.to_dict('index')
     for i in range(len(y)):
         results_list.append({i:{'inputs': x[i], 'output':y[i]}})
 

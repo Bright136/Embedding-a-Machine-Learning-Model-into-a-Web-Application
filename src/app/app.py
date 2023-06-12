@@ -69,14 +69,13 @@ async def predict(plasma_glucose: float, blood_work_result_1: float,
                            blood_work_result_2,blood_work_result_3,body_mass_index, 
                            blood_work_result_4, age,insurance]], columns=return_columns())
 
-    data_copy = data.copy() # Create a copy of the dataframe
-    label, prob = make_prediction(data, transformer, model) # Get the labels
-    data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
-    data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
-    inputs = data.to_dict('index') # Convert dataframe to dictionary
-    outputs = data_copy[['Predicted Label']].to_dict('index')    
-    response = {'inputs': inputs,
-                'outputs': outputs}
+    # data_copy = data.copy() # Create a copy of the dataframe
+    labels, prob = make_prediction(data, transformer, model) # Get the labels
+    # data_copy['Predicted Label'] = label[0] # Get the labels from making a prediction
+    # data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
+    # inputs = data.to_dict('index') # Convert dataframe to dictionary
+    # outputs = data_copy[['Predicted Label']].to_dict('index')    
+    response = output_batch(data, labels) # output results
     return response
 
 
@@ -87,11 +86,7 @@ async def predict_batch(inputs: Inputs):
     data = pd.DataFrame(inputs.return_dict_inputs())
     data_copy = data.copy() # Create a copy of the data
     labels, probs = make_prediction(data, transformer, model) # Get the labels
-    data_labels = pd.DataFrame(labels, columns=['Predicted Label'])
-    data_labels['Predicted Label'] = data_labels.apply(process_label, axis=1)
-
-    response = output_batch(data, data_labels)
-
+    response = output_batch(data, labels) # output results
     return response
 
 
@@ -108,19 +103,13 @@ async def upload_data(file: UploadFile = File(...)):
         return JSONResponse(content={"error": f"Invalid file format. Must be one of: {', '.join(valid_formats)}"})
     
     else:
-        contents = await file.read()
+        contents = await file.read() # read contents in file
         data= process_json_csv(contents=contents,file_type=file_type, valid_formats=valid_formats)  
-        data_copy = data.copy() # Create a copy of the data
         labels, probs = make_prediction(data, transformer, model) # Get the labels
-        data_labels = pd.DataFrame(labels, columns=['Predicted Label'])
-        data_labels['Predicted Label'] = data_labels.apply(process_label, axis=1)
-        response = output_batch(data, data_labels)
+        response = output_batch(data, labels) # output results
 
     return response
-        #data_dict = data_copy.to_dict('index') # Convert data to a dictionary
-        # print(data_dict.index)
 
-    # return {'outputs': data_dict}
 
 # Run the FastAPI application
 if __name__ == '__main__':
