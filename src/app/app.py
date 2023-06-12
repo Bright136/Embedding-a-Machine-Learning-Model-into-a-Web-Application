@@ -112,12 +112,15 @@ async def upload_data(file: UploadFile = File(...)):
         data= process_json_csv(contents=contents,file_type=file_type, valid_formats=valid_formats)  
         data_copy = data.copy() # Create a copy of the data
         labels, probs = make_prediction(data, transformer, model) # Get the labels
-        data_copy['Predicted Label'] = labels# Create the predicted label column
-        data_copy['Predicted Label'] = data_copy.apply(process_label, axis=1)
-        data_dict = data_copy.to_dict('index') # Convert data to a dictionary
+        data_labels = pd.DataFrame(labels, columns=['Predicted Label'])
+        data_labels['Predicted Label'] = data_labels.apply(process_label, axis=1)
+        response = output_batch(data, data_labels)
+
+    return response
+        #data_dict = data_copy.to_dict('index') # Convert data to a dictionary
         # print(data_dict.index)
 
-    return {'outputs': data_dict}
+    # return {'outputs': data_dict}
 
 # Run the FastAPI application
 if __name__ == '__main__':

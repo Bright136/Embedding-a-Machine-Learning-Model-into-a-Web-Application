@@ -98,11 +98,10 @@ def output_batch(data1, data2):
     #     row1 = data1.iloc(index).to_dict()
     #     row2 = data2.iloc(index).to_dict()
     #     results_list.append({'input': row1, 'output': row2})
-
-    for row1, row2 in zip(data1.itertuples(index=False), data2.itertuples(index=False)):
-        dictionary_from_dataframe1 = row1._asdict()
-        dictionary_from_dataframe2 = row2._asdict()
-        results_list.append({'input': dictionary_from_dataframe1, 'output': dictionary_from_dataframe2})
+    x = data1.to_dict('index')
+    y = data2.to_dict('index')
+    for i in range(len(y)):
+        results_list.append({i:{'inputs': x[i], 'output':y[i]}})
 
     final_dict = {'results': results_list}
     return final_dict
