@@ -2,9 +2,15 @@ import streamlit as st
 import requests
 from PIL import Image
 
+image_path = 'src\streamlit_app\images\image.jpg'
+image = Image.open(image_path)
+
+
+
+
 
 # Set API Endpoint
-URL = 'https://radiant-lowlands-86946.herokuapp.com//predict'
+URL = 'https://radiant-lowlands-86946.herokuapp.com/predict'
 
 
 # Create a function to make prediction
@@ -21,7 +27,6 @@ def make_prediction(pg: float, bwr1: float, bp : float, bwr2: float, bwr3: float
         'age':int(age),
         'insurance':bool(insurance)}
     response = requests.post(URL, params=parameters)
-    print(type(age))
     response_text =  response.json()
     sepsis_status = response_text['results'][0]['0']['output']['Predicted Label']
     return sepsis_status
@@ -46,9 +51,12 @@ This app return sepsis status base on the input parameters
 """)
 
 st.markdown('''
-
-    <h1 style="color: green">The Sepsis Prediction App</h1>
+    <h1 style="color: green; text-align:center">The Sepsis Prediction App</h1>
     ''', unsafe_allow_html=True)
+
+# insert an image
+st.image(image, caption=None, width=None, use_column_width=None, clamp=False, channels="RGB", output_format="auto")
+
 
 # Create app interface
 container = st.container()
@@ -67,6 +75,13 @@ with container:
     ins = col3.selectbox(label='Insurance', options=[True, False])
     bmi =col3.slider(label='Body Mass Index', min_value=0, max_value=100)
     button = st.button(label='Predict', type='primary', use_container_width=True)
+    
+
+if button:
+    response = make_prediction(pg, bwr1, bp, bwr2, bwr3, bmi, bwr4, age, ins)
+    st.write(response)
+
+
 
 
 
