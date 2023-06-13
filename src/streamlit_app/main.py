@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+from PIL import Image
+
 
 # Set API Endpoint
 URL = 'https://radiant-lowlands-86946.herokuapp.com//predict'
@@ -25,6 +27,46 @@ def make_prediction(pg: float, bwr1: float, bp : float, bwr2: float, bwr3: float
     return sepsis_status
 
 
+# set page configuration
+st.set_page_config(
+    page_title='Sepsis Prediction',
+    page_icon="🤖",
+    initial_sidebar_state="expanded",
+    menu_items={
+        'About': "# This is a Health App. Call it the Covid Vaccine Sepsis Analyzer!"
+    }
+)  
+
+
+# create a sidebar and contents
+st.sidebar.markdown("""
+## Demo App
+
+This app return sepsis status base on the input parameters
+""")
+
+st.markdown('''
+
+    <h1 style="color: green">The Sepsis Prediction App</h1>
+    ''', unsafe_allow_html=True)
+
+# Create app interface
+container = st.container()
+container.write("Inputs to predict Sepsis")
+with container:
+    col1, col2, col3 = st.columns(3)
+    
+    age = col1.number_input(label='Age')
+    pg = col2.number_input(label='Blood Glucose')
+    bp = col3.number_input(label='Blood Pressure')
+    with st.expander(label='Blood Parameter', expanded=True, ):
+        bwr1 = col1.number_input(label='Blood Work Result-1')
+        bwr2 = col2.number_input(label='Blood Work Result-2')
+        bwr3 = col1.number_input(label='Blood Work Result-3')
+        bwr4 = col2.number_input(label='Blood Work Result-4')
+    ins = col3.selectbox(label='Insurance', options=[True, False])
+    bmi =col3.slider(label='Body Mass Index', min_value=0, max_value=100)
+    button = st.button(label='Predict', type='primary', use_container_width=True)
 
 
 
