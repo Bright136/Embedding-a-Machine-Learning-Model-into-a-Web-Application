@@ -9,6 +9,7 @@
 
 <div align='center'> 
     <img src="https://drive.google.com/uc?export=view&id=1FSw-ora9cu92d1YyK1HYxcPjm0_uQ296"/>
+    
 
 </div>
 
@@ -186,7 +187,8 @@ Here is the provided information converted into an HTML table:
 1. A jupyter notebook for training a classification model
 2. A classification Model
 3. An API App built with FastApi
-4. A Dockerfile for easy deployment 
+4. A Streamlit app that make calls to the build and hosted API
+5. A Dockerfile for easy deployment 
 
 
 
@@ -276,6 +278,16 @@ To contribute to this project, follow these guidelines:
 ### Screenshot of the API
 
 https://github.com/Bright136/Embedding-a-Machine-Learning-Model-into-a-Web-Application/assets/94003056/6d544350-61f9-4b26-aff9-33e57e7242ee
+
+
+### Screenshots of App
+This app makes calls to our API endpoint /predict.
+
+<div align='center'> 
+    <img src="https://drive.google.com/uc?export=view&id=1MPF08s6DAAgGfL5k3f2J-Y7KufqxIp0G"/>
+
+</div>
+
 
 
 
