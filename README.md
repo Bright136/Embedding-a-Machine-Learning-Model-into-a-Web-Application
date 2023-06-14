@@ -223,7 +223,8 @@ To run any the notebooks:
 - Run cells in the notebook
 
 
-3. API
+2. API
+
 To execute the API, follow these steps:
 After all requirement have been install
 
@@ -241,7 +242,7 @@ OR
 Open your browser and go to http://127.0.0.1:8000/docs to access the API documentation
 
 
-2. Streamlit App
+3. Streamlit App
 
 To execute the App, follow these steps:
 After all requirement have been install
