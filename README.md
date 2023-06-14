@@ -223,8 +223,7 @@ To run any the notebooks:
 - Run cells in the notebook
 
 
-2. API
-
+3. API
 To execute the API, follow these steps:
 After all requirement have been install
 
@@ -240,6 +239,22 @@ OR
             python src/app/app.py
 
 Open your browser and go to http://127.0.0.1:8000/docs to access the API documentation
+
+
+2. Streamlit App
+
+To execute the App, follow these steps:
+After all requirement have been install
+
+At the root of your repository in your terminal
+`root :: Embedding-a-Machine-Learning-Model-into-a-Web-Application> ...`
+run the command:
+
+
+            streamlit src/streamlit_app/main.py
+
+Open your browser and go to http://localhost:8501 or http://172.20.10.12:8501 to access the App.
+
 
 ## 7. Endpoints <a name="api-endpoints"></a>
 
