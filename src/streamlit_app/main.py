@@ -73,7 +73,7 @@ with container:
         bwr3 = col1.number_input(label='Blood Work Result-3')
         bwr4 = col2.number_input(label='Blood Work Result-4')
     ins = col3.selectbox(label='Insurance', options=[True, False])
-    bmi =col3.slider(label='Body Mass Index', min_value=0, max_value=100)
+    bmi = col3.number_input(label='Body Mass Index')
     button = st.button(label='Predict', type='primary', use_container_width=True)
     
 
