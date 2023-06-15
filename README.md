@@ -53,8 +53,6 @@ This project combines machine learning and FastAPI to develop a powerful and sca
 
 ### i. Description of dataset <a name="dataset"></a>
 
-Here is the provided information converted into an HTML table:
-
 <table>
   <tr>
     <th>Column Name</th>
@@ -141,8 +139,8 @@ Here is the provided information converted into an HTML table:
     <th>Deployed links</th>
   </tr>
   <tr>
-    <td>App</td>
-    <td><a href="">App</a></td>
+    <td>Sepsis Prediction App</td>
+    <td><a href="">Deployed App with huggingface</a></td>
   </tr>
 
 </table>
